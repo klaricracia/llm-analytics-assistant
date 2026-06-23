@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LLM Analytics Assistant — Klarissa Artavia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --blue:#4100F5;--fuchsia:#F037A5;--tangerine:#FF4632;
+      --black:#191414;--surface:#1E1A1A;--surface2:#252020;
+      --text:#F5F5F0;--muted:#9E9A9A;
+      --grad:linear-gradient(135deg,#4100F5,#F037A5,#FF4632);
+    }
+    html,body{background:var(--black);color:var(--text);font-family:'Arimo',sans-serif;min-height:100vh}
+
+    header{background:var(--black);border-bottom:1px solid #2a2525;padding:20px 40px;display:flex;align-items:center;justify-content:space-between}
+    .logo-pill{background:var(--grad);border-radius:8px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#fff;flex-shrink:0}
+    .header-title h1{font-weight:900;font-size:18px;letter-spacing:-0.03em}
+    .header-title p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue);letter-spacing:0.2em;text-transform:uppercase;margin-top:2px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.15em;padding:4px 10px;border-radius:4px;text-transform:uppercase}
+    .badge-blue{background:var(--blue);color:#fff}
+    .badge-fuch{background:var(--fuchsia);color:#fff}
+    .badge-outline{border:1px solid #3a3535;color:var(--muted)}
+
+    .hero{background:var(--grad);padding:56px 40px 48px;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;right:-80px;top:-80px;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,0.06)}
+    .hero::after{content:'';position:absolute;right:80px;bottom:-100px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.04)}
+    .hero-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-bottom:14px}
+    .hero h2{font-weight:900;font-size:clamp(30px,5vw,52px);letter-spacing:-0.045em;line-height:1.0;color:#fff;max-width:700px}
+    .hero p{margin-top:16px;font-size:16px;color:rgba(255,255,255,0.8);max-width:560px;line-height:1.6}
+    .hero-stack{margin-top:24px;display:flex;gap:8px;flex-wrap:wrap}
+    .stack-pill{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;padding:5px 12px;border-radius:4px;background:rgba(255,255,255,0.15);color:#fff;text-transform:uppercase}
+    .stack-pill.ai{background:rgba(255,255,255,0.25)}
+
+    .main{padding:40px;max-width:1100px;margin:0 auto}
+
+    /* Architecture */
+    .arch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:#2a2525;border-radius:12px;overflow:hidden;margin-bottom:40px}
+    .arch-card{background:var(--surface);padding:28px 24px;text-align:center}
+    .arch-icon{font-size:28px;margin-bottom:12px}
+    .arch-title{font-weight:900;font-size:14px;letter-spacing:-0.02em;margin-bottom:6px}
+    .arch-desc{font-size:12px;color:var(--muted);line-height:1.5}
+    .arch-arrow{display:flex;align-items:center;justify-content:center;background:var(--surface2);color:var(--blue);font-size:20px;font-weight:900}
+
+    /* Demo chat */
+    .section-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+    .section-title{font-weight:900;font-size:24px;letter-spacing:-0.03em;margin-bottom:28px}
+
+    .chat-demo{display:flex;flex-direction:column;gap:16px;margin-bottom:48px}
+    .msg-wrap{display:flex;gap:12px;align-items:flex-start}
+    .msg-wrap.user{flex-direction:row-reverse}
+    .avatar{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;flex-shrink:0}
+    .avatar-user{background:var(--blue);color:#fff}
+    .avatar-ai{background:var(--grad);color:#fff}
+    .bubble{max-width:75%;padding:14px 18px;border-radius:12px;font-size:14px;line-height:1.6}
+    .bubble-user{background:var(--blue);color:#fff;border-radius:12px 12px 4px 12px}
+    .bubble-ai{background:var(--surface);border:1px solid #2a2525;color:var(--text);border-radius:12px 12px 12px 4px}
+    .bubble-ai .label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--blue);text-transform:uppercase;margin-bottom:8px}
+    .highlight{background:var(--surface2);border-left:3px solid var(--blue);padding:10px 14px;border-radius:0 6px 6px 0;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7}
+
+    /* Tools grid */
+    .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px}
+    .tool-card{background:var(--surface);border:1px solid #2a2525;border-radius:10px;padding:20px}
+    .tool-group{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+    .tool-name{font-weight:700;font-size:13px;margin-bottom:4px;font-family:'JetBrains Mono',monospace;color:var(--blue)}
+    .tool-desc{font-size:12px;color:var(--muted);line-height:1.5}
+
+    footer{padding:32px 40px;border-top:1px solid #2a2525;display:flex;align-items:center;justify-content:space-between;max-width:100%}
+    footer p{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted)}
+    footer a{color:var(--blue);text-decoration:none}
+
+    @media(max-width:900px){.arch-grid{grid-template-columns:1fr}.arch-arrow{display:none}.tools-grid{grid-template-columns:1fr}.main{padding:24px}}
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="logo-pill">KA</div>
+    <div class="header-title">
+      <h1>Klarissa Artavia</h1>
+      <p>Data &amp; AI Strategy · AI Transformation</p>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span class="badge badge-fuch">LangChain · Claude API</span>
+    <span class="badge badge-blue">PROJECT LAUNCH</span>
+    <span class="badge badge-outline">Python · LLM · NLP</span>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-label">Case Study · LLM Engineering · Retail AI</div>
+  <h2>Ask your data<br>anything.</h2>
+  <p>Natural language interface over three connected retail analytics projects. Ask a business question — the assistant routes it to the right tool, queries the data, and returns a grounded answer.</p>
+  <div class="hero-stack">
+    <span class="stack-pill">Python</span>
+    <span class="stack-pill">LangChain</span>
+    <span class="stack-pill ai">Claude API</span>
+    <span class="stack-pill">Tool Use</span>
+    <span class="stack-pill">pandas</span>
+    <span class="stack-pill">Gradio</span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Architecture -->
+  <div style="margin-bottom:12px">
+    <div class="section-label">System Design</div>
+    <div class="section-title">How it works</div>
+  </div>
+  <div class="arch-grid">
+    <div class="arch-card">
+      <div class="arch-icon">💬</div>
+      <div class="arch-title">Natural Language Input</div>
+      <div class="arch-desc">User asks a plain English business question via Gradio chat or CLI</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-card">
+      <div class="arch-icon">🧠</div>
+      <div class="arch-title">Claude Reasoning</div>
+      <div class="arch-desc">Claude decides which tool(s) to call based on the question intent — one or many</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-card">
+      <div class="arch-icon">🔧</div>
+      <div class="arch-title">Tool Execution</div>
+      <div class="arch-desc">14 Python functions query the RFM, alert, and pricing CSV datasets</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-card">
+      <div class="arch-icon">📊</div>
+      <div class="arch-title">Grounded Answer</div>
+      <div class="arch-desc">Claude synthesises tool results into a concise, data-backed business answer</div>
+    </div>
+  </div>
+
+  <!-- Demo conversations -->
+  <div class="section-label">Live Demo</div>
+  <div class="section-title">Example conversations</div>
+
+  <div class="chat-demo">
+
+    <!-- Q1 -->
+    <div class="msg-wrap user">
+      <div class="avatar avatar-user">You</div>
+      <div class="bubble bubble-user">How much revenue is at risk from churning customers right now?</div>
+    </div>
+    <div class="msg-wrap">
+      <div class="avatar avatar-ai">KA</div>
+      <div class="bubble bubble-ai">
+        <div class="label">Analytics Assistant</div>
+        <strong>$1.64M in revenue is at risk from two segments showing clear churn signals.</strong>
+        <div class="highlight">
+          At Risk:         186 customers · $1,630,772 · last seen 228 days ago avg<br>
+          Can't Lose Them:   3 customers · $7,278    · last seen 213 days ago avg<br>
+          ────────────────────────────────────────────────────<br>
+          Total at risk:   $1,638,050 (13.6% of total revenue)
+        </div>
+        The At Risk group is the one to act on immediately — 186 high-frequency, high-spend customers who have gone quiet. A targeted win-back campaign within 30 days is the recommended action before these shift into Lost.
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="msg-wrap user">
+      <div class="avatar avatar-user">You</div>
+      <div class="bubble bubble-user">What was the worst KPI anomaly detected by the monitoring bot?</div>
+    </div>
+    <div class="msg-wrap">
+      <div class="avatar avatar-ai">KA</div>
+      <div class="bubble bubble-ai">
+        <div class="label">Analytics Assistant</div>
+        <strong>The worst anomaly was a revenue spike of +80% on April 30, 2024 — z-score of 6.77.</strong>
+        <div class="highlight">
+          KPI:      Daily Revenue<br>
+          Date:     2024-04-30<br>
+          Value:    $34,702 (expected ~$19,277)<br>
+          Deviation:+80.0%  ·  z = 6.77
+        </div>
+        A z-score of 6.77 is extreme — this is more than 6 standard deviations above normal. The bot would have flagged this immediately and sent alerts to both email and Slack. Worth investigating whether this was a one-off bulk order, a pricing error, or a genuine demand event.
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="msg-wrap user">
+      <div class="avatar avatar-user">You</div>
+      <div class="bubble bubble-user">Which 3 products have the biggest margin opportunity? And what would change if I optimised for revenue instead?</div>
+    </div>
+    <div class="msg-wrap">
+      <div class="avatar avatar-ai">KA</div>
+      <div class="bubble bubble-ai">
+        <div class="label">Analytics Assistant</div>
+        <strong>For margin: all three are Electronics, currently priced well below optimal.</strong>
+        <div class="highlight">
+          Electronics 07: $138 → $215 (+56%) · margin uplift +102%<br>
+          Electronics 02: $126 → $193 (+54%) · margin uplift +87%<br>
+          Electronics 09: $443 → $612 (+38%) · margin uplift +87%
+        </div>
+        <strong>If you switch to revenue:</strong> the recommendations flip almost entirely. The model would suggest lowering these same products — Electronics 07 drops to ~$112, Electronics 02 to ~$99. Revenue uplift is smaller (+28–37%) but you'd capture significantly more volume.
+        <br><br>
+        This is the core pricing trade-off: margin optimisation raises prices and accepts lower volume; revenue optimisation does the opposite. Electronics is the most elastic category (−2.1), so the difference between objectives is especially sharp here.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tool registry -->
+  <div class="section-label">Under the Hood</div>
+  <div class="section-title">14 analytics tools available</div>
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-group">Customer Intelligence</div>
+      <div class="tool-name">get_segment_overview()</div>
+      <div class="tool-desc">Full breakdown of all 8 RFM segments — counts, revenue share, recency</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-group">Customer Intelligence</div>
+      <div class="tool-name">get_at_risk_summary()</div>
+      <div class="tool-desc">Focused analysis of churning high-value customers and revenue at risk</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-group">Customer Intelligence</div>
+      <div class="tool-name">get_top_customers(n)</div>
+      <div class="tool-desc">Top N customers by lifetime monetary value with segment labels</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-group">KPI Monitoring</div>
+      <div class="tool-name">get_alert_summary()</div>
+      <div class="tool-desc">Overview of all anomalies detected — counts, date range, most flagged KPIs</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-group">KPI Monitoring</div>
+      <div class="tool-name">get_alerts_by_kpi(kpi)</div>
+      <div class="tool-desc">All historical alerts for a specific KPI with dates, values, z-scores</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-group">KPI Monitoring</div>
+      <div class="tool-name">get_worst_anomaly()</div>
+      <div class="tool-desc">The single highest-deviation anomaly across all KPIs and dates</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-group">Pricing Engine</div>
+      <div class="tool-name">get_top_opportunities(n, obj)</div>
+      <div class="tool-desc">Top N products by pricing uplift for margin or revenue objective</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-group">Pricing Engine</div>
+      <div class="tool-name">get_products_by_action(action)</div>
+      <div class="tool-desc">All products recommended to RAISE, LOWER, or HOLD price</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-group">Pricing Engine</div>
+      <div class="tool-name">get_model_performance()</div>
+      <div class="tool-desc">XGBoost demand model metrics — R², MAE, MAPE, feature importances</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Klarissa Artavia · <a href="https://github.com/klaricracia" target="_blank">github.com/klaricracia</a> · <a href="https://www.linkedin.com/in/klariartavia/" target="_blank">linkedin.com/in/klariartavia</a></p>
+  <p>Claude API · LangChain · Python · Tool Use · 2024</p>
+</footer>
+
+</body>
+</html>
